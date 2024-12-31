@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery Warning Widget</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: radial-gradient(circle, #2b2b2b, #1a1a1a);
+            color: #d4af37;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .battery-widget {
+            text-align: center;
+            padding: 30px;
+            border: 2px solid #d4af37;
+            text-transform: uppercase;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            animation: zoomIn 1s ease-in-out;
+        }
+
+        @keyframes zoomIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .battery-widget h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(255, 215, 0, 0.4);
+        }
+
+        .battery-widget p {
+            font-size: 1.2em;
+        }
+
+        .warning {
+            margin-top: 15px;
+            color: #ff4500;
+            font-weight: bold;
+            display: none;
+            animation: flicker 1.5s infinite;
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="battery-widget">
+        <h1>Battery Level Monitor</h1>
+        <p id="battery-status">Checking battery status...</p>
+        <p class="warning" id="warning-msg">⚠️ Battery is below 30%! Please charge your laptop. ⚠️</p>
+    </div>
+
+    <script nonce>
+        // Check if Battery API is supported
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(function(battery) {
+                function updateBatteryStatus() {
+                    const batteryStatus = document.getElementById('battery-status');
+                    const warningMsg = document.getElementById('warning-msg');
+
+                    // Display battery level
+                    const level = Math.round(battery.level * 100);
+                    batteryStatus.textContent = `Battery Level: ${level}%`;
+
+                    // Show or hide warning message
+                    if (level < 30) {
+                        warningMsg.style.display = 'block';
+                    } else {
+                        warningMsg.style.display = 'none';
+                    }
+                }
+
+                // Update battery status initially and on changes
+                updateBatteryStatus();
+                battery.addEventListener('levelchange', updateBatteryStatus);
+            });
+        } else {
+            document.getElementById('battery-status').textContent = 'Battery API not supported on this browser.';
+        }
+    </script>
+</body>
+</html>
